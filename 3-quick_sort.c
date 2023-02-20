@@ -1,98 +1,73 @@
 #include "sort.h"
 
 /**
- * swap_pos - swaps position of values in array
- *
- * @array: array to be changed
- * @first: first index
- * @second: second index
- */
-void swap_pos(int **array, size_t first, size_t second)
-{
-	int holder;
-
-	holder = (*array)[first];
-	(*array)[first] = (*array)[second];
-	(*array)[second] = holder;
-}
-
-/**
- * partition - splits the array into two parts
- * part lower than the sorted index and a part higher
- *
- * @array: array to be sorted
- * @lower: lower boundary
- * @upper: upper boundary
- * @size: size of the array
- *
- * Return: index of sorted pivot
- */
-size_t partition(int **array, size_t lower, size_t upper, size_t size)
-{
-	size_t before, after, pivot;
-
-	pivot = upper;
-	before = lower;
-
-	for (after = before; after < upper; after++)
-	{
-		/* check if array after is lesser than array pivot */
-		if ((*array)[after] <= (*array)[pivot])
-		{
-			if (before != after)
-			{
-				swap_pos(array, before, after);
-				print_array(*array, size);
-			}
-			before += 1;
-		}
-	}
-
-	/* swap pivot to its original position */
-	if (before != after)
-	{
-		swap_pos(array, before, after);
-		print_array(*array, size);
-	}
-	return (before);
-}
-/**
- * sorter - recursively sorts the array given
- *
- * @array: array to be sorted
- * @lb: lower bound
- * @ub: upper bound
- * @size: size of the array
- */
-void sorter(int **array, size_t lb, size_t ub, size_t size)
-{
-	size_t sorted_index;
-
-	/* recursive breakpoint */
-	if (lb < ub && *array)
-	{
-		sorted_index = partition(array, lb, ub, size);
-
-		/* perform recursive sort */
-		if (sorted_index - lb > 1)	/* more than one element must be present */
-			sorter(array, lb, sorted_index - 1, size);    /* sort lower boundary */
-
-		if (ub - sorted_index > 1)
-			sorter(array, sorted_index + 1, ub, size);    /* sort upper boundary */
-	}
-}
-
-/**
- * quick_sort - applies the quick sort algorithm to sort
- * a given array
- *
- * @array: array to be sorted
- * @size: size of the array
+ * quick_sort - function that sorts an array of integers
+ *              in ascending order using the Quick sort algorithm
+ * @array: array
+ * @size: array's size
+ * Return: void
  */
 void quick_sort(int *array, size_t size)
 {
-	if (!array || size < 2)
+	if (array == NULL || size < 2)
 		return;
-	/* create the sorter function to recursively sort the array */
-	sorter(&array, 0, size - 1, size);
+
+	quick_s(array, 0, size - 1, size);
+}
+
+/**
+ * partition - partition
+ * @array: array
+ * @lo: lower
+ * @hi: higher
+ * @size: array's size
+ * Return: i
+ */
+int partition(int *array, int lo, int hi, size_t size)
+{
+	int i = lo - 1, j = lo;
+	int pivot = array[hi], aux = 0;
+
+	for (; j < hi; j++)
+	{
+		if (array[j] < pivot)
+		{
+			i++;
+			if (array[i] != array[j])
+			{
+				aux = array[i];
+				array[i] = array[j];
+				array[j] = aux;
+				print_array(array, size);
+			}
+		}
+	}
+	if (array[i + 1] != array[hi])
+	{
+		aux = array[i + 1];
+		array[i + 1] = array[hi];
+		array[hi] = aux;
+		print_array(array, size);
+	}
+	return (i + 1);
+}
+
+/**
+ * quick_s - quick sort
+ * @array: given array
+ * @lo: lower
+ * @hi:higher
+ * @size: array's size
+ * Return: void
+ */
+void quick_s(int *array, int lo, int hi, size_t size)
+{
+	int pivot;
+
+	if (lo < hi)
+	{
+		pivot = partition(array, lo, hi, size);
+		quick_s(array, lo, pivot - 1, size);
+		quick_s(array, pivot + 1, hi, size);
+	}
 }
